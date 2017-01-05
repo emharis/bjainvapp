@@ -30,6 +30,24 @@
       <div class="box-header with-border" >
         <a class="btn btn-primary" id="btn-add" href="purchase/order/add" ><i class="fa fa-plus" ></i> Add Purchase Order</a>
 
+        <div class="pull-right" >
+                <table style="background-color: #ECF0F5;width: 200px;" >
+                    <tbody>
+                      <tr>
+                        <td class="bg-green text-center" rowspan="2" style="width: 50px;" ><i class="ft-rupiah" ></i></td>
+                        <td style="padding-left: 10px;padding-right: 5px;">
+                            TOTAL
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-right"  style="padding-right: 5px;" >
+                            <label class="uang">{{$total}}</label>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
         {{-- FILTER WIDGET --}}
           {{-- <button class="pull-right btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown" ><i class="fa fa-filter" ></i> Filter</button>
           <div class="dropdown-menu form-login stop-propagation pull-right" role="menu">

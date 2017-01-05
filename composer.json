@@ -9,7 +9,6 @@
         "laravel/framework": "5.2.*",
         "barryvdh/laravel-ide-helper": "^2.1",
         "laravelcollective/html": "^5.2",
-        "barryvdh/laravel-dompdf": "^0.7.0",
         "browner12/helpers": "^1.0",
         "setasign/fpdf": "1.8.1"
     },

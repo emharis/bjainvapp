@@ -190,7 +190,9 @@ Route::group(['middleware' => ['web','auth']], function () {
           Route::get('/','PurchaseReportController@index');
           Route::post('show-report','PurchaseReportController@showReport');
           Route::post('report-by-date','PurchaseReportController@reportByDate');
+          Route::post('pdf-by-date','PurchaseReportController@pdfByDate');
           Route::post('report-by-supplier','PurchaseReportController@reportBySupplier');
+          Route::post('pdf-by-supplier','PurchaseReportController@pdfBySupplier');
         });
 
         // END OF PURCHASE REPORT
@@ -238,6 +240,18 @@ Route::group(['middleware' => ['web','auth']], function () {
         Route::post('order/delete-payment','SalesOrderController@deletePayment');
         Route::get('order/show-invoice-multi/{so_master_id}','SalesOrderController@showInvoiceMulti');
         // END OF SALES ORDER
+
+        // SALES REPORT
+        Route::group(['prefix' => 'report'], function () {
+          Route::get('/','SalesReportController@index');
+          Route::post('show-report','SalesReportController@showReport');
+          Route::post('report-by-date','SalesReportController@reportByDate');
+          Route::post('pdf-by-date','SalesReportController@pdfByDate');
+          Route::post('report-by-customer','SalesReportController@reportByCustomer');
+          Route::post('pdf-by-customer','SalesReportController@pdfByCustomer');
+          Route::post('pdf-by-salesperson','SalesReportController@pdfBySalesperson');
+          Route::post('pdf-by-all','SalesReportController@pdfByAll');
+        });
 
     });
     // END OF SALES

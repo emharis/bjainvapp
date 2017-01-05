@@ -42,7 +42,7 @@
     <input type="hidden" name="po_master_id" value="<?php echo e($po_master->id); ?>">
 
     <!-- Default box -->
-    <div class="box box-solid">
+    <div class="box <?php echo e($po_master->status == 'V' ? 'box-solid':'box-danger'); ?>">
         <div class="box-header with-border" style="padding-top:5px;padding-bottom:5px;" >
             <?php /* <a class="btn btn-primary" style="margin-top:0;" id="btn-validate-po" >Validate</a> */ ?>
             <?php /* header */ ?>
@@ -55,16 +55,20 @@
               </label>
             <?php /* <?php endif; ?> */ ?>
 
-            <label class="pull-right" >&nbsp;&nbsp;&nbsp;</label>
-            <a class="btn  btn-arrow-right pull-right disabled <?php echo e($po_master->status == 'V' ? 'bg-blue' : 'bg-gray'); ?>" >Validated</a>
+            <?php if($po_master->status != "C"): ?>
+                <label class="pull-right" >&nbsp;&nbsp;&nbsp;</label>
+                <a class="btn  btn-arrow-right pull-right disabled <?php echo e($po_master->status == 'V' ? 'bg-blue' : 'bg-gray'); ?>" >VALIDATED</a>
 
-            <label class="pull-right" >&nbsp;&nbsp;&nbsp;</label>
+                <label class="pull-right" >&nbsp;&nbsp;&nbsp;</label>
 
-            <a class="btn btn-arrow-right pull-right disabled <?php echo e($po_master->status == 'O' ? 'bg-blue' : 'bg-gray'); ?>" >Open</a>
+                <a class="btn btn-arrow-right pull-right disabled <?php echo e($po_master->status == 'O' ? 'bg-blue' : 'bg-gray'); ?>" >OPEN</a>
 
-            <label class="pull-right" >&nbsp;&nbsp;&nbsp;</label>
-
-            <a class="btn btn-arrow-right pull-right disabled bg-gray" >Draft</a>
+                <label class="pull-right" >&nbsp;&nbsp;&nbsp;</label>
+                <a class="btn btn-arrow-right pull-right disabled bg-gray" >DRAFT</a>
+            <?php else: ?>
+                <label class="pull-right" >&nbsp;&nbsp;&nbsp;</label>
+                <a class="btn btn-arrow-right pull-right disabled bg-red" >CANCELED</a>
+            <?php endif; ?>
         </div>
         <div class="box-body">
           <?php /* <?php if($can_delete): ?>
@@ -77,7 +81,7 @@
 
             <div class="row" >
                 <div class="col-lg-10" >
-                    <table class="table" >
+                    <table class="table no-border" >
                 <tbody>
                     <tr>
                         <td class="col-lg-2">
@@ -122,10 +126,12 @@
                 </div>
                 <div class="col-lg-2" >
                      <?php /* modul invoices */ ?>
+                     <?php if($po_master->status != "C"): ?>
                     <a class="btn btn-app pull-right" href="purchase/order/invoice/<?php echo e($po_master->id); ?>" >
                         <span class="badge bg-green">1</span>
                         <i class="fa fa-newspaper-o"></i> Invoices
                     </a>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -142,6 +148,7 @@
                 <thead>
                     <tr>
                         <th style="width:25px;" >NO</th>
+                        <th  >KODE</th>
                         <th class="col-lg-4" >PRODUCT</th>
                         <th class="col-lg-1" >QUANTITY</th>
                         <th>UNIT PRICE</th>
@@ -154,9 +161,13 @@
                     <?php foreach($po_barang as $dt): ?>
                         <tr class="row-product"  >
                             <td class="text-right" ><?php echo e($rownum++); ?></td>
+                            <td  >
+                                <?php echo e($dt->kode_barang); ?>
+
+                            </td>
                             <td>
                                 <?php /* <input autocomplete="off" type="text"  data-barangid="<?php echo e($dt->barang_id); ?>" data-kode="" class="text-uppercase form-control input-product input-sm input-clear"  value="<?php echo e($dt->nama_barang_full); ?>" readonly > */ ?>
-                                <?php echo e($dt->nama_barang_full); ?>
+                                <?php echo e($dt->kategori . ' ' . $dt->nama_barang); ?>
 
                             </td>
                             <td class="text-right" >
@@ -238,7 +249,11 @@
                 </div>
                 <div class="col-lg-12" >
                     <?php /* <button type="submit" class="btn btn-primary" id="btn-save" >Save</button> */ ?>
-                            <a class="btn btn-danger" href="purchase/order" >Close</a>
+                    <?php if($po_master->status != "C"): ?>
+                        <button class="btn btn-warning" id="btn-cancel-order" data-href="purchase/order/cancel-order/<?php echo e($po_master->id); ?>" ><i class="fa fa-reply" ></i> Cancel Order</button>
+                    &nbsp;&nbsp;&nbsp;
+                    <?php endif; ?>
+                    <a class="btn btn-danger" href="purchase/order" ><i class="fa fa-close" ></i> Close</a>
                 </div>
             </div>
 

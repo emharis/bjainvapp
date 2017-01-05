@@ -26,10 +26,10 @@
     <!-- Default box -->
     <div class="box box-solid">
         <div class="box-header with-border" >   
-            <a class="btn btn-primary btn-sm" id="btn-add" href="sales/order/add" ><i class="fa fa-plus" ></i> Add Sales Order</a>
+            <a class="btn btn-primary" id="btn-add" href="sales/order/add" ><i class="fa fa-plus" ></i> Add Sales Order</a>
             <?php /* FILTER WIDGET */ ?>
-            <button class="pull-right btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown" ><i class="fa fa-filter" ></i> Filter</button>
-            <div class="dropdown-menu form-login stop-propagation pull-right" role="menu">
+            <?php /* <button class="pull-right btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown" ><i class="fa fa-filter" ></i> Filter</button> */ ?>
+            <?php /* <div class="dropdown-menu form-login stop-propagation pull-right" role="menu">
               <div class="form-group" >
                 <form method="POST" name="form-filter-by-status-open" action="sales/order/filter" >
                   <input type="hidden" name="filter_by" value="open" />
@@ -41,28 +41,27 @@
                 </form>
               </div>
               <li class="divider" ></li>
-              <form method="POST" name="form-filter" action="sales/order/filter" >
-                <div class="form-group">
-                    <select name="filter_by" class="form-control">
-                      <option value="customer" >Customer</option>
-                      <option value="order_date" >Order Date</option>
-                    </select>
-                </div>
-                <div class="form-group filter_by_customer ">
-                  <?php echo Form::select('filter_select_customer',$select_customer,null,['class'=>'form-control']); ?>
-
-                </div>
-                <div class="form-group filter_by_order_date hide">
-                  <input type="text" name="filter_date_start" class="form-control input-date" placeholder="Order date from" />
-                </div>
-                <div class="form-group filter_by_order_date hide">
-                  <input type="text" name="filter_date_end" class="form-control input-date" placeholder="Order date to" />
-                </div>
-
-                <button type="submit" id="btn-submit-filter" class="btn btn-success btn-block "><i class="glyphicon glyphicon-ok"></i> Submit</button>
-              </form>
-            </div>
+              
+            </div> */ ?>
             <?php /* END FILTER WIDGET */ ?>
+
+            <div class="pull-right" >
+                <table style="background-color: #ECF0F5;width: 200px;" >
+                    <tbody>
+                      <tr>
+                        <td class="bg-green text-center" rowspan="2" style="width: 50px;" ><i class="ft-rupiah" ></i></td>
+                        <td style="padding-left: 10px;padding-right: 5px;">
+                            TOTAL
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-right"  style="padding-right: 5px;" >
+                            <label class="uang"><?php echo e($total); ?></label>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
         <div class="box-body">
             <?php $rownum=1; ?>
@@ -101,22 +100,24 @@
 
                             </td>
                             <td>
-                                <?php echo e($dt->customer); ?>
+                                <?php echo e($dt->nama_customer); ?>
 
                             </td>
                             <td>
-                                <?php echo e($dt->nama_salesman_full); ?>
+                                <?php echo e($dt->salesman); ?>
 
                             </td>
-                            <td>
-                                <?php echo e(number_format($dt->total,0,'.',',')); ?>
+                            <td class="uang text-right" >
+                                <?php echo e($dt->total); ?>
 
                             </td>
-                            <td>
+                            <td class="text-center" >
                                 <?php if($dt->status == 'O'): ?>
-                                    Open
+                                    <label class="label label-warning" >OPEN</label>
+                                <?php elseif($dt->status == 'C'): ?>
+                                    <label class="label label-danger" >CANCELED</label>
                                 <?php else: ?>
-                                    Validated
+                                    <label class="label label-success" >VALIDATED</label>
                                 <?php endif; ?>
                             </td>
                             <td>
@@ -161,10 +162,16 @@
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('scripts'); ?>
-<script src="plugins/datatables/jquery.dataTables.min.js"></script>
-<script src="plugins/datatables/dataTables.bootstrap.min.js"></script>
-<script src="plugins/jqueryform/jquery.form.min.js" type="text/javascript"></script>
-<script src="plugins/datepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<?php echo Html::script('plugins/datatables/jquery.dataTables.min.js'); ?>
+
+<?php echo Html::script('plugins/datatables/dataTables.bootstrap.min.js'); ?>
+
+<?php echo Html::script('plugins/jqueryform/jquery.form.min.js'); ?>
+
+<?php echo Html::script('plugins/datepicker/bootstrap-datepicker.js'); ?>
+
+<?php echo Html::script('plugins/autonumeric/autoNumeric-min.js'); ?>
+
 
 <script type="text/javascript">
 (function ($) {
@@ -231,6 +238,18 @@
         } else {
             requiredCheckboxes.attr('required', 'required');
         }
+    });
+
+    // -----------------------------------------------------
+    // SET AUTO NUMERIC
+    // =====================================================
+    $('.uang').autoNumeric('init',{
+        vMin:'0.00',
+        vMax:'9999999999.00'
+    });
+
+    $('.uang').each(function(){
+        $(this).autoNumeric('set',$(this).autoNumeric('get'));
     });
 
     var TBL_KATEGORI = $('#table-order').DataTable({

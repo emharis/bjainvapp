@@ -38,7 +38,7 @@
         <a href="sales/order/edit/{{$so_master->id}}" >{{$so_master->so_no}}</a>
         <i class="fa fa-angle-double-right" ></i>
         @if($multi_invoice)
-        <a href="sales/order/invoice/{{$so_master->id}}" >Customer Invoices</a>
+        <a href="sales/order/invoice/{{$so_master->id}}" >Invoices</a>
         <i class="fa fa-angle-double-right" ></i>
         @endif
         {{$cust_inv->no_inv}}
@@ -97,7 +97,7 @@
                         </td>
                         <td class="col-lg-4" >
                             {{-- <input type="text" name="supplier" class="form-control" data-supplierid="{{$so_master->supplier_id}}" value="{{$so_master->supplier}}" required> --}}
-                            {{$so_master->customer}}
+                            {{$so_master->nama_customer}}
                         </td>
                         <td class="col-lg-2" ></td>
                         <td class="col-lg-2" >
@@ -151,7 +151,7 @@
                         <tr>
                             <td>{{$rownum++}}</td>
                             <td>
-                                {{$dt->nama}}
+                                {{$dt->kategori . ' '  . $dt->nama_barang}}
                             </td>
                             <td class="text-right" >
                                 {{$dt->qty}}
@@ -159,7 +159,7 @@
                             <td>{{$dt->satuan}}</td>
                             <td class="text-right" >{{$dt->berat}}</td>
                             <td class="text-right" >
-                                {{number_format($dt->harga_salesman,0,'.',',')}}
+                                {{number_format($dt->unit_price,0,'.',',')}}
                             </td>
                             <td class="text-right" >
                                 {{number_format($dt->subtotal,0,'.',',')}}
@@ -228,13 +228,14 @@
                     </table>
                 </div>
                 <div class="col-lg-12" >
+                    <a target="_blank" class="btn btn-success" id="btn-print-invoice" href="api/cetak-sales-order-invoice/{{$cust_inv->id}}" ><i class="fa fa-print" ></i> Print</a>
+                    &nbsp;&nbsp;
                     @if($multi_invoice)
-                        <a class="btn btn-danger" href="sales/order/invoice/{{$so_master->id}}" >Close</a>
+                        <a class="btn btn-danger" href="sales/order/invoice/{{$so_master->id}}" ><i class="fa fa-close" ></i> Close</a>
                     @else
-                        <a class="btn btn-danger" href="sales/order/edit/{{$so_master->id}}" >Close</a>
+                        <a class="btn btn-danger" href="sales/order/edit/{{$so_master->id}}" ><i class="fa fa-close" ></i> Close</a>
                     @endif
 
-                    <a target="_blank" class="btn btn-success" id="btn-print-invoice" href="api/cetak-sales-order-invoice/{{$cust_inv->id}}" >Print</a>
                 </div>
             </div>
         </div><!-- /.box-body -->

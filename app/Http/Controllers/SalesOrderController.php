@@ -20,10 +20,15 @@ class SalesOrderController extends Controller {
         // foreach($customer as $dt ){
         //   $select_customer[$dt->id] = $dt->nama;
         // }
+
+        $total = \DB::table('sales')
+                    ->whereStatus('V')
+                    ->sum('total');
         
         
         return view('sales.order.salesorder', [
             'data' => $data,
+            'total' => $total,
             // 'select_customer' => $select_customer
         ]);
     }
@@ -157,6 +162,7 @@ class SalesOrderController extends Controller {
                             'total' => $so_master->total,
                             'status' => 'O',
                             'user_id' => \Auth::user()->id,
+                            'note' => $req->note
                         ]);
 
             // insert into table jual_barang
@@ -196,9 +202,9 @@ class SalesOrderController extends Controller {
         // $jual = \DB::table('jual')
         //         ->find($req->sales_order_id);
         // $jual_barang = \DB::table('jual_barang')
-        //                 ->where('jual_id',$jual->id)->get();
+        //                 ->where('sales_id',$jual->id)->get();
         // $stok_moving = \DB::table('stok_moving')
-        //                 ->where('jual_id',$jual->id)
+        //                 ->where('sales_id',$jual->id)
         //                 ->get();
         // // restore stock
         // foreach($stok_moving as $dt){
@@ -211,12 +217,12 @@ class SalesOrderController extends Controller {
 
         // // delete stok moving
         // \DB::table('stok_moving')
-        //     ->where('jual_id',$jual->id)
+        //     ->where('sales_id',$jual->id)
         //     ->delete();
 
         // // delete customer invoice
         // \DB::table('customer_invoice')
-        //     ->where('jual_id',$jual->id)
+        //     ->where('sales_id',$jual->id)
         //     ->delete();
 
         // // delete jual
@@ -234,8 +240,8 @@ class SalesOrderController extends Controller {
     public function edit($id){
         $so_master = \DB::table('view_sales')->find($id);
         $so_barang = \DB::table('view_sales_detail')
-                        // ->join('view_stok_barang','view_sales_products.barang_id','=','view_stok_barang.id')
-                        // ->select('view_sales_products.*','view_stok_barang.stok')
+                        // ->join('view_stok_barang','view_sales_detail.barang_id','=','view_stok_barang.id')
+                        // ->select('view_sales_detail.*','view_stok_barang.stok')
                         ->where('sales_id',$so_master->id)->get();
 
         if($so_master->status == 'O'){
@@ -244,7 +250,7 @@ class SalesOrderController extends Controller {
                 'so_barang' => $so_barang,
             ]);
         }
-        else if($so_master->status == 'V'){
+        else if($so_master->status == ('V' || 'C') ){
             $invoice_num = \DB::table('customer_invoice')->where('sales_id',$so_master->id)->count();
 
             // open view validate
@@ -284,6 +290,7 @@ class SalesOrderController extends Controller {
                         'subtotal' => $so_master->subtotal,
                         'disc' => $so_master->disc,
                         'total' => $so_master->total,
+                        'note' => $so_master->note
                     ]);
 
             // Delete data barang sebelumnya
@@ -321,7 +328,7 @@ class SalesOrderController extends Controller {
 
             // $so_master = \DB::table('jual')->find($req->so_master_id);
             // $so_barang = \DB::table('jual_barang')
-            //                 ->where('jual_id',$req->so_master_id)
+            //                 ->where('sales_id',$req->so_master_id)
             //                 ->get();
 
             // // update stok barang & stok_moving
@@ -344,7 +351,7 @@ class SalesOrderController extends Controller {
             //                         'stok_id' => $st->id,
             //                         'jumlah' => $qty_for_sell,
             //                         'tipe' => 'O',
-            //                         'jual_id' => $req->so_master_id,
+            //                         'sales_id' => $req->so_master_id,
             //                         'jual_barang_id' => $jual_barang_id,
             //                         'user_id' => \Auth::user()->id
             //                     ]);
@@ -371,7 +378,7 @@ class SalesOrderController extends Controller {
             //                         'stok_id' => $st->id,
             //                         'jumlah' => $stok_qty_on_db,
             //                         'tipe' => 'O',
-            //                         'jual_id' => $req->so_master_id,
+            //                         'sales_id' => $req->so_master_id,
             //                         'user_id' => \Auth::user()->id
             //                     ]);
             //             // kurangi qty_for_sell
@@ -406,7 +413,7 @@ class SalesOrderController extends Controller {
             //                     'barang_id' => $sb->barang_id,
             //                     'user_id' => \Auth::user()->id
             //                 ]);
-            //             $subtotal += $sb->qty * $sb->harga_salesman;
+            //             $subtotal += $sb->qty * $sb->unit_price;
             //         }else{
             //             echo 'cresate_invoice_barang_id  : ' . $sb->barang_id . '<br>';
             //             // Update Invoice
@@ -428,7 +435,7 @@ class SalesOrderController extends Controller {
             //                     'barang_id' => $sb->barang_id,
             //                     'user_id' => \Auth::user()->id
             //                 ]);
-            //             $subtotal = $sb->qty * $sb->harga_salesman;
+            //             $subtotal = $sb->qty * $sb->unit_price;
 
             //             // clear subtotal
             //             // $subtotal = 0;
@@ -488,7 +495,7 @@ class SalesOrderController extends Controller {
                 'no_inv' => $invoice_number_id,
                 'invoice_date' => new \DateTime(),
                 'due_date' => $due_date,
-                'jual_id' => $so_master->id,
+                'sales_id' => $so_master->id,
                 'status' => 'O',
                 'user_id' => \Auth::user()->id,
                 // 'total' => $so_master->total,
@@ -504,17 +511,17 @@ class SalesOrderController extends Controller {
     public function toInvoice($so_master_id){
         $so_master = \DB::table('view_sales')
                         ->find($so_master_id);
-        $so_barang = \DB::table('view_sales_products')
-                        ->where('jual_id',$so_master_id)
-                        ->select('nama_full as nama','satuan','berat','qty','harga_salesman','subtotal')
+        $so_barang = \DB::table('view_sales_detail')
+                        ->where('sales_id',$so_master_id)
+                        // ->select('kode_barang','nama_barang','satuan','berat','qty','unit_price','subtotal')
                         ->get();
 
 
         // get invoice
-        if (\DB::table('customer_invoice')->where('jual_id',$so_master->id)->count() > 1){
+        if (\DB::table('customer_invoice')->where('sales_id',$so_master->id)->count() > 1){
             // tampilkan lebih dari 1 invoice
             $cust_inv = \DB::table('view_customer_invoice')
-                    ->where('jual_id',$so_master->id)
+                    ->where('sales_id',$so_master->id)
                     ->get();
 
             return view('sales/order/salesorderinvoicelist',[
@@ -525,7 +532,7 @@ class SalesOrderController extends Controller {
         }else{
             // tampilkan 1 invoice
             $cust_inv = \DB::table('customer_invoice')
-                    ->where('jual_id',$so_master->id)
+                    ->where('sales_id',$so_master->id)
                     ->select('customer_invoice.*',
                                 \DB::raw("date_format(`invoice_date`,'%d-%m-%Y') as invoice_date_formatted"),
                                 \DB::raw("date_format(`due_date`,'%d-%m-%Y') as due_date_formatted")
@@ -559,11 +566,11 @@ class SalesOrderController extends Controller {
                                 \DB::raw("date_format(`due_date`,'%d-%m-%Y') as due_date_formatted")
                             )
                     ->first();
-        $so_master = \DB::table('view_sales')->find($cust_invoice->jual_id);
-        $barang = \DB::table('view_sales_products')
-                        ->where('jual_id',$so_master->id)
-                        ->whereRaw('view_sales_products.barang_id in (select barang_id from customer_invoice_detail where customer_invoice_id = ' . $invoice_id . ')')
-                        ->select('nama_full as nama','satuan','berat','qty','harga_salesman','subtotal')
+        $so_master = \DB::table('view_sales')->find($cust_invoice->sales_id);
+        $barang = \DB::table('view_sales_detail')
+                        ->where('sales_id',$so_master->id)
+                        ->whereRaw('view_sales_detail.barang_id in (select barang_id from customer_invoice_detail where customer_invoice_id = ' . $invoice_id . ')')
+                        ->select('nama_barang','satuan','berat','qty','unit_price','subtotal')
                         ->get();
         $payments =  \DB::table('customer_invoice_payment')
                             ->where('customer_invoice_id',$invoice_id)
@@ -592,7 +599,7 @@ class SalesOrderController extends Controller {
     public function regPayment($cust_inv_id){
         // echo 'Register Payment SO';
         $cust_inv = \DB::table('customer_invoice')->find($cust_inv_id);
-        $so_master = \DB::table('view_sales')->find($cust_inv->jual_id);
+        $so_master = \DB::table('view_sales')->find($cust_inv->sales_id);
 
         return view('sales/order/payment',[
                 'cust_inv' => $cust_inv,
@@ -648,8 +655,8 @@ class SalesOrderController extends Controller {
                     ]);
 
                 // cek if multi invoice
-                $invoice_doc_num = \DB::table('customer_invoice')->selectRaw('select * from customer_invoice where jual_id = (select jual_id from customer_invoice where id = ' . $req->customer_inv_id . ')')->count();
-                $so_master_id = \DB::table('customer_invoice')->find($req->customer_inv_id)->jual_id;
+                $invoice_doc_num = \DB::table('customer_invoice')->selectRaw('select * from customer_invoice where sales_id = (select sales_id from customer_invoice where id = ' . $req->customer_inv_id . ')')->count();
+                $so_master_id = \DB::table('customer_invoice')->find($req->customer_inv_id)->sales_id;
 
                 if($invoice_doc_num > 1){
                     return redirect('sales/order/show-invoice-multi/' . $req->customer_inv_id);

@@ -48,9 +48,9 @@
         <ul class="nav nav-tabs">
           <li class="active"><a href="#tab_data" data-toggle="tab">Invoice</a></li>
           <li><a href="#tab_payment" data-toggle="tab">Payments</a></li>
-          <li class="pull-right header" >
+          {{-- <li class="pull-right header" >
               <a class="" id="btn-print-invoice" href="#" ><i class="fa fa-print" ></i></a>
-          </li>
+          </li> --}}
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="tab_data">
@@ -83,7 +83,7 @@
                             </td>
                             <td class="col-lg-4" >
                                 {{-- <input type="text" name="supplier" class="form-control" data-supplierid="{{$so_master->supplier_id}}" value="{{$so_master->supplier}}" required> --}}
-                                {{$data->customer}}
+                                {{$data->nama_customer}}
                             </td>
                             <td class="col-lg-2" ></td>
                             <td class="col-lg-2" >
@@ -96,7 +96,7 @@
                         </tr>
                         <tr>
                             <td class="col-lg-2">
-                                <label>Source Document</label>
+                                <label>SO Ref#</label>
                             </td>
                             <td class="col-lg-4" >
                                 {{-- <input type="text" name="no_inv" class="form-control" value="{{$so_master->no_inv}}" > --}}
@@ -136,7 +136,7 @@
                             <tr>
                                 <td class="text-right">{{$rownum++}}</td>
                                 <td>
-                                    {{$dt->nama_full}}
+                                    {{$dt->kategori . ' ' . $dt->nama_barang}}
                                 </td>
                                 <td class="text-right" >
                                     {{$dt->qty}}
@@ -147,11 +147,11 @@
                                 <td class="text-right" >
                                     {{$dt->berat}}
                                 </td>
-                                <td class="text-right" >
-                                    {{number_format($dt->harga_salesman,0,'.',',')}}
+                                <td class="text-right uang" >
+                                    {{$dt->unit_price}}
                                 </td>
-                                <td class="text-right" >
-                                    {{number_format($dt->subtotal,0,'.',',')}}
+                                <td class="text-right uang" >
+                                    {{$dt->subtotal}}
                                 </td>
                             </tr>
                         @endforeach
@@ -171,16 +171,16 @@
                                     <td class="text-right">
                                         <label>Subtotal :</label>
                                     </td>
-                                    <td id="label-total-subtotal" class=" text-right" >
-                                        {{number_format($data->subtotal,0,'.',',')}}
+                                    <td id="label-total-subtotal" class="uang text-right" >
+                                        {{$data->subtotal}}
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="text-right" >
                                         <label>Disc :</label>
                                     </td>
-                                    <td class="text-right" id="label-disc" >
-                                        {{number_format($data->disc,0,'.',',')}}
+                                    <td class="text-right uang" id="label-disc" >
+                                        {{$data->disc}}
                                        {{-- <input style="font-size:14px;" type="text" name="disc" class="input-sm form-control text-right input-clear" value="{{$so_master->disc}}" >  --}}
 
                                     </td>
@@ -189,8 +189,8 @@
                                     <td class="text-right" style="border-top:solid darkgray 1px;" >
                                         Total :
                                     </td>
-                                    <td id="label-total" class=" text-right" style="font-size:18px;font-weight:bold;border-top:solid darkgray 1px;" >
-                                        {{number_format($data->total,0,'.',',')}}
+                                    <td id="label-total" class="uang text-right" style="font-size:18px;font-weight:bold;border-top:solid darkgray 1px;" >
+                                        {{$data->total}}
                                     </td>
                                 </tr>
                                 @if(count($payments) > 0)
@@ -200,8 +200,8 @@
                                             {{-- <a class="btn-delete-payment" data-paymentid="{{$dt->id}}" href="#" ><i class="fa fa-trash-o pull-left" ></i></a> --}}
                                             <i>Paid on {{$dt->payment_date_formatted}}</i>
                                         </td>
-                                        <td class="text-right" >
-                                            <i>{{number_format($dt->payment_amount,0,'.',',')}}</i>
+                                        <td class="text-right uang" >
+                                            <i>{{$dt->payment_amount}}</i>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -210,8 +210,8 @@
                                     <td class="text-right" style="border-top:solid darkgray 1px;" >
                                         Amount Due :
                                     </td>
-                                    <td id="label-amount-due" class=" text-right" style="font-size:18px;font-weight:bold;border-top:solid darkgray 1px;" >
-                                        {{number_format($data->amount_due,0,'.',',')}}
+                                    <td id="label-amount-due" class="uang text-right" style="font-size:18px;font-weight:bold;border-top:solid darkgray 1px;" >
+                                        {{$data->amount_due}}
                                     </td>
                                 </tr>
                             </tbody>
@@ -221,7 +221,8 @@
                         {{-- @if($multi_invoice)
                         <a class="btn btn-danger" href="sales/order/invoice/{{$so_master->id}}" >Close</a>
                         @else --}}
-                            <a class="btn btn-danger" href="invoice/customer-invoice" >Close</a>
+                            <a class="btn btn-success" target="_blank" href="api/cetak-sales-order-invoice/{{$data->id}}" ><i class="fa fa-print"  ></i> Print</a>
+                            <a class="btn btn-danger" href="invoice/customer-invoice" ><i class="fa fa-close" ></i> Close</a>
                         {{-- @endif --}}
                     </div>
                 </div>
@@ -256,7 +257,7 @@
                             <td class="text-right" >{{$rownum++}}</td>
                             <td>{{$pay->payment_date_formatted}}</td>
                             <td>{{$pay->payment_number}}</td>
-                            <td class="text-right" >{{number_format($pay->payment_amount,0,'.',',')}}</td>
+                            <td class="text-right" >{{$pay->payment_amount}}</td>
                             <td  >
                                 <a class="btn btn-danger btn-xs btn-delete-payment" href="#" data-paymentid="{{$dt->id}}" ><i class="fa fa-trash-o" ></i></a>
                             </td>
@@ -269,7 +270,7 @@
                         <td colspan="3" style="margin:0;padding:0;" ></td>
                         <td class="text-right" style="margin:0;padding:0;" >
                             <label class="pull-left" >TOTAL:</label>
-                            <label>{{number_format($payment_paid,0,'.',',')}}</label>
+                            <label>{{$payment_paid}}</label>
                         </td>
                         <td style="margin:0;padding:0;" ></td>
                     </tr>
@@ -321,6 +322,16 @@
         }
 
         return false;
+    });
+
+    // FORMAT UANG
+    $('.uang').autoNumeric('init',{
+        vMin:'0.00',
+        vMax:'9999999999.00'
+    });
+
+    $('.uang').each(function(){
+        $(this).autoNumeric('set',$(this).autoNumeric('get'));
     });
 
 })(jQuery);

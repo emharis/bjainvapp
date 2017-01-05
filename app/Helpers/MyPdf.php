@@ -7,9 +7,13 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 // use Codedge\Fpdf\Fpdf\FPDF as FPDF;
+// use fpdf\FPDF;
 use FPDF;
 
+// class MyPdf extends Fpdf{
 class MyPdf extends FPDF{
+
+
 
 	function WordWrap($text, $maxwidth)
 	{

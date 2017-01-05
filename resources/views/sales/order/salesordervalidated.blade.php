@@ -63,16 +63,19 @@
               </ul>
             </div> --}}
 
+            @if($so_master->status == 'V')
             <label class="pull-right" >&nbsp;&nbsp;&nbsp;</label>
-            <a class="btn  btn-arrow-right pull-right disabled bg-blue"" >Validated</a>
-
-            <label class="pull-right" >&nbsp;&nbsp;&nbsp;</label>
-
-            <a class="btn btn-arrow-right pull-right disabled bg-gray" >Open</a>
+            <a class="btn  btn-arrow-right pull-right disabled bg-blue"" >VALIDATED</a>
 
             <label class="pull-right" >&nbsp;&nbsp;&nbsp;</label>
+            <a class="btn btn-arrow-right pull-right disabled bg-gray" >OPEN</a>
 
-            <a class="btn btn-arrow-right pull-right disabled bg-gray" >Draft</a>
+            <label class="pull-right" >&nbsp;&nbsp;&nbsp;</label>
+            <a class="btn btn-arrow-right pull-right disabled bg-gray" >DRAFT</a>
+            @else
+                <label class="pull-right" >&nbsp;&nbsp;&nbsp;</label>
+                <a class="btn btn-arrow-right pull-right disabled bg-red" >CANCELED</a>
+            @endif
         </div>
         <div class="box-body">
 
@@ -124,10 +127,12 @@
                 </div>
                 <div class="col-lg-2" >
                     {{-- widget invoices --}}
+                    @if($so_master->status == 'V')
                     <a class="btn btn-app pull-right" href="sales/order/invoice/{{$so_master->id}}" >
                             <span class="badge bg-green">{{$invoice_num}}</span>
                             <i class="fa fa-newspaper-o"></i> Invoices
                           </a>
+                    @endif
                 </div>
             </div>
 
@@ -235,8 +240,10 @@
                 </div>
                 <div class="col-lg-12" >
                     {{-- <button type="submit" class="btn btn-primary" id="btn-save" >Save</button> --}}
+                    @if($so_master->status == 'V')
                     <button class="btn btn-warning" id="btn-cancel-order" data-orderid="{{$so_master->id}}" ><i class="fa fa-reply" ></i> Cancel Order</button>
                     &nbsp;
+                    @endif
                     <a class="btn btn-danger" href="sales/order" ><i class="fa fa-close" ></i> Close</a>
                 </div>
             </div>

@@ -19,19 +19,38 @@
 
     <!-- Default box -->
     <div class="box box-solid">
+        <div class="box-header with-border" >
+            <h3 class="box-title" >Account Payable</h3>
+            <div class="pull-right" >
+                <table style="background-color: #ECF0F5;width: 200px;" >
+                    <tbody>
+                      <tr>
+                        <td class="bg-orange text-center" rowspan="2" style="width: 50px;" ><i class="ft-rupiah" ></i></td>
+                        <td style="padding-left: 10px;padding-right: 5px;">
+                            TOTAL
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-right"  style="padding-right: 5px;" >
+                            <label class="uang"><?php echo e($total_payable); ?></label>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
         <div class="box-body">
             <?php $rownum=1; ?>
             <table class="table table-bordered table-condensed table-striped table-hover" id="table-order" >
                 <thead>
                     <tr>
                         <th style="width:30px;" >NO</th>
-                        <th>REF#</th>
                         <th>SUPPLIER</th>
+                        <th>REF#</th>
                         <th>BILL DATE</th>
-                        <th>PO REF#</th>
                         <th>SUPPLIER REF#</th>
                         <th>DUE DATE</th>
-                        <th>SOURCE DOCUMENT</th>
+                        <th>PO REF#</th>
                         <th>TOTAL</th>
                         <th>TO PAY</th>
                         <th>STATUS</th>
@@ -47,39 +66,41 @@
 
                             </td>
                             <td>
-                                <?php echo e($dt->bill_no); ?>
-
-                            </td>
-                            <td>
+                                <?php /* supplier */ ?>
                                 <?php echo e($dt->supplier); ?>
 
                             </td>
                             <td>
+                                <?php /* ref# */ ?>
+                                <?php echo e($dt->bill_no); ?>
+
+                            </td>
+                            <td>
+                                <?php /* bill date */ ?>
                                 <?php echo e($dt->bill_date_formatted); ?>
 
                             </td>
                             <td>
-                                <?php echo e($dt->po_num); ?>
-
-                            </td>
-                            <td>
+                                <?php /* supplier ref# */ ?>
                                 <?php echo e($dt->no_inv); ?>
 
                             </td>
                             <td>
+                                <?php /* due date */ ?>
                                 <?php echo e($dt->due_date_formatted); ?>
 
                             </td>
-                            <td  >
+                            <td>
+                                <?php /* po ref# */ ?>
                                 <?php echo e($dt->po_num); ?>
 
                             </td>
-                            <td class="text-right" >
-                                <?php echo e(number_format($dt->total,0,'.',',')); ?>
+                            <td class="text-right uang" >
+                                <?php echo e($dt->total); ?>
 
                             </td>
-                            <td class="text-right" >
-                                <?php echo e(number_format($dt->amount_due,0,'.',',')); ?>
+                            <td class="text-right uang" >
+                                <?php echo e($dt->amount_due); ?>
 
                             </td>
                             <td class="text-center" >
@@ -133,6 +154,8 @@
 <script src="plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="plugins/datatables/dataTables.bootstrap.min.js"></script>
 <script src="plugins/jqueryform/jquery.form.min.js" type="text/javascript"></script>
+<?php echo Html::script('plugins/autonumeric/autoNumeric-min.js'); ?>
+
 
 <script type="text/javascript">
 (function ($) {
@@ -145,6 +168,15 @@
             requiredCheckboxes.attr('required', 'required');
         }
     });
+
+    // SET AUTONUMERIC
+  $('.uang').autoNumeric('init',{
+        vMin:'0.00',
+        vMax:'9999999999.00'
+    });
+  $('.uang').each(function(){
+    $(this).autoNumeric('set',$(this).autoNumeric('get'));
+  });
 
     var TBL_KATEGORI = $('#table-order').DataTable({
         // "columns": [

@@ -23,6 +23,10 @@
         padding-right: 5px;
         padding-left: 5px;
     }
+
+    input.input-clear.input-quantity-on-hand,input.input-clear.input-unit-price,input.input-clear.input-subtotal{
+        background-color: #fff;
+    }
 </style>
 
 <?php $__env->appendSection(); ?>
@@ -97,7 +101,7 @@
                     <tr>
                         <th style="width:25px;" >NO</th>
                         <th  >PRODUCT</th>
-                        <th class="col-lg-1" >Q.O.H</th>
+                        <th class="col-lg-1" >QOH</th>
                         <th class="col-lg-1" >QUANTITY</th>
                         <th class="col-lg-2" >UNIT PRICE</th>
                         <th class="col-lg-2" >S.U.P</th>
@@ -144,7 +148,7 @@
             <div class="row" >
                 <div class="col-lg-8" >
                     <textarea name="note" class="form-control" rows="3" style="margin-top:5px;" placeholder="Note" ></textarea>
-                    <i>* <span>Q.O.H : Quantity on Hand</span></i>
+                    <i>* <span>QOH : Quantity on Hand</span></i>
                     <i>&nbsp;|&nbsp;</i>
                     <i><span>S.U.P : Salesperson Unit Price</span></i>
                 </div>
@@ -179,8 +183,8 @@
                     </table>
                 </div>
                 <div class="col-lg-12" >
-                    <button type="submit" class="btn btn-primary" id="btn-save" >Save</button>
-                            <a class="btn btn-danger" id="btn-cancel-save" >Cancel</a>
+                    <button type="submit" class="btn btn-primary" id="btn-save" ><i class="fa fa-save" ></i> Save</button>
+                            <a class="btn btn-danger" id="btn-cancel-save" href="sales/order" ><i class="fa fa-close" ></i> Close</a>
                 </div>
             </div>
 
@@ -325,18 +329,18 @@
 
                 // get quantity on hand dan tampilkan ke input-quantity-on-hand
                 // input_product.parent().next().children('input').val(suggestions.stok);
-                input_qty_on_hand.val(suggestions.stok);
+                input_qty_on_hand.val(suggestions.quantity_on_hand);
 
                 // set maks input-quanity
                 // input_product.parent().next().next().children('input').attr('max',suggestions.stok);
-                input_qty.attr('max',suggestions.stok);
+                input_qty.attr('max',suggestions.quantity_on_hand);
 
                 // get unit_price & tampikan ke input-unit-price
                 // input_product.parent().next().next().children('input').autoNumeric('set',suggestions.harga_jual);
-                input_unit_price.autoNumeric('set',suggestions.harga_jual);
+                input_unit_price.autoNumeric('set',suggestions.unit_price);
 
                 //set SUP default unit price
-                input_sup.autoNumeric('set',suggestions.harga_jual);
+                input_sup.autoNumeric('set',suggestions.unit_price);
 
                 // fokuskan ke input quantity
                 // input_product.parent().next().children('input').focus();
@@ -434,15 +438,15 @@
 
     
     // BTN CANCEL SAVE
-    $('#btn-cancel-save').click(function(){
-        if(confirm('Anda akan membabtalkan transaksi ini?')){
-            location.href = "sales/order";
-        }else
-        {
+    // $('#btn-cancel-save').click(function(){
+    //     if(confirm('Anda akan membabtalkan transaksi ini?')){
+    //         location.href = "sales/order";
+    //     }else
+    //     {
 
-        return false
-        }
-    });
+    //     return false
+    //     }
+    // });
     // END OF BTN CANCEL SAVE
 
 

@@ -165,7 +165,142 @@ class ApiController extends Controller {
     }
 
     public function cetakSalesOrderInvoice($invoice_id){
-        echo 'cetak sales order invoice';
+        $data = \DB::table('view_customer_invoice')->find($invoice_id);
+        $data_barang = \DB::table('view_sales_detail')
+                        ->where('sales_id',$data->sales_id)
+                        ->get();
+
+        $tmpdir = sys_get_temp_dir();   # ambil direktori temporary untuk simpan file.
+        $file =  tempnam($tmpdir, 'ctk');  # nama file temporary yang akan dicetak
+        $handle = fopen($file, 'w');
+        $condensed = Chr(27) . Chr(33) . Chr(4);
+        $bold1 = Chr(27) . Chr(69);
+        $bold0 = Chr(27) . Chr(70);
+        $initialized = chr(27).chr(64);
+        $condensed1 = chr(15);
+        $condensed0 = chr(18);
+        $header_space = "                     "  ;
+        $header_space_mid = "                                                              ";
+        $left_space_row_barang = "";
+        $Data  = $initialized;
+        $Data .= $condensed1;
+
+        // HEADER
+        $Data .= "\n";
+        $Data .= $header_space . $data->no_inv . $header_space_mid . $data->nama_customer .  "\n";
+        $Data .= $header_space.$data->invoice_date_formatted . $header_space_mid . $data->alamat ."\n";
+        $Data .= $header_space.$data->due_date_formatted."\n";
+        // $Data .= "  ".$bold1."Tanggulangin, Sidoarjo 61272".$bold0."      |\n";
+        $Data .= "\n";
+        $Data .= "\n";
+        $Data .= "\n";
+        $Data .= "\n";
+        $Data .= "\n";
+
+        $nama_barang = "                                  ";
+        $satuan = "        ";
+        $berat = "        ";
+        $qty = "             ";
+        $harga = "              ";
+        $harga_unit = "                "; // harga * bebrat
+        $jumlah = "                   "; // harga_unit * qty
+
+        $rownum=1;
+        foreach($data_barang as $dt){
+            $ctk_nama_barang = substr($dt->kategori ." " . $dt->nama_barang,0,34);
+            $ctk_nama_barang=$ctk_nama_barang . substr($nama_barang,0,strlen($nama_barang)-strlen($ctk_nama_barang));
+
+            $ctk_satuan = substr($dt->satuan ,0,15);
+            $ctk_satuan=$ctk_satuan . substr($satuan,0,strlen($satuan)-strlen($ctk_satuan));
+
+            $ctk_berat = $dt->berat;
+            $ctk_berat= substr($berat,0,strlen($berat)-strlen($ctk_berat)) . $ctk_berat ;
+
+            $ctk_qty = $dt->qty;
+            $ctk_qty= substr($qty,0,strlen($qty)-strlen($ctk_qty)) . $ctk_qty ;
+
+            $ctk_harga = number_format($dt->unit_price/$dt->berat,2,',','.');
+            $ctk_harga= substr($harga,0,strlen($harga)-strlen($ctk_harga)) .  $ctk_harga ;
+
+            $ctk_harga_unit = number_format($dt->unit_price,2,',','.');
+            $ctk_harga_unit= substr($harga_unit,0,strlen($harga_unit)-strlen($ctk_harga_unit)) . $ctk_harga_unit;
+
+            $ctk_jumlah = number_format($dt->unit_price * $dt->qty,2,',','.');
+            $ctk_jumlah= substr($jumlah,0,strlen($jumlah)-strlen($ctk_jumlah)) .$ctk_jumlah ;
+
+            $Data .= $left_space_row_barang . $rownum++ 
+                    . "   ". $ctk_nama_barang
+                    . "  ". $ctk_satuan
+                    . "  ". $ctk_berat 
+                    . "  ". $ctk_qty
+                    . "  ". $ctk_harga 
+                    . "  ". $ctk_harga_unit 
+                    . "  ". $ctk_jumlah 
+                    ." \n";
+            // $rownum++;
+        }
+
+        $row_barang_max = 11;
+        for($i=0; $i<=($row_barang_max-count($data_barang)); $i++){
+            $Data .= " \n";
+        }
+
+        $note_space = "                                                                                     ";
+        $note_space_2 = "                                                                                     ";
+        $note_line_1 = substr($data->note,0,85) . substr($note_space,0, 85-strlen(substr($data->note,0,85)) );
+
+        $note_line_2 =  substr($data->note,85,85) . substr($note_space,0, 85-strlen(substr($data->note,85,85)) );
+        $note_length = "   " . $nama_barang . $satuan . $berat . $qty . $harga ;
+
+        // JUMLAH
+        $ctk_total_jumlah = number_format($data->subtotal,2,',','.');
+        $ctk_total_jumlah= substr($jumlah,0,strlen($jumlah)-strlen($ctk_total_jumlah)) .$ctk_total_jumlah ;
+        $Data .=  $note_length .$harga_unit . "            " . $ctk_total_jumlah ." \n";
+
+        // DISC
+        $ctk_disc = number_format($data->disc,2,',','.');
+        $ctk_disc= substr($jumlah,0,strlen($jumlah)-strlen($ctk_disc)) .$ctk_disc ;
+        $Data .= $note_line_1 . substr($note_length,0, $note_length-strlen($note_line_1) ) .  $harga_unit . "       " . $ctk_disc ." \n";
+
+        // GRAND TOTAL
+        $ctk_grand_total = number_format($data->total,2,',','.');
+        $ctk_grand_total= substr($jumlah,0,strlen($jumlah)-strlen($ctk_grand_total)) .$ctk_grand_total ;
+        $Data .= $note_line_2 . substr($note_length,0, $note_length-strlen($note_line_2) ) . $harga_unit . "       ". $ctk_grand_total ." \n";
+        
+        $Data .= " \n";
+        $Data .= " \n";
+        $Data .= " \n";
+        $Data .= " \n";
+        $Data .= " \n";
+
+        // TERTANDA CUSTOMER/PELANGGAN
+        $nama_customer = $data->nama_customer;
+        $col_customer = "  " . $nama_barang;
+        $ttd_customer_outer_space = substr($col_customer,0,(strlen($col_customer) - strlen($nama_customer))/2);
+        $ttd_customer = $ttd_customer_outer_space . $nama_customer . $ttd_customer_outer_space;
+        $Data .= $ttd_customer;
+
+        // TERTANDA ADMIN
+        $user = \DB::table('users')->find($data->user_id);
+        $nama_admin = $user->name;
+        $col_admin = "  " . $satuan.$berat;
+        $ttd_admin_outer_space = substr($col_admin,0,(strlen($col_admin) - strlen($nama_customer))/2);
+        $ttd_admin = $ttd_admin_outer_space . $nama_admin . $ttd_admin_outer_space;
+        $Data .= "  " . $ttd_admin;
+
+        $invoice_bottom_spacer = Appsetting('invoice_bottom_spacer');
+
+        for($i=0;$i<$invoice_bottom_spacer;$i++){
+            $Data .= " \n";            
+        }
+        
+
+        // echo $Data;
+
+        fwrite($handle, $Data);
+        fclose($handle);
+        copy($file, Appsetting('printer_address'));  # Lakukan cetak
+        unlink($file);
     }
 
 

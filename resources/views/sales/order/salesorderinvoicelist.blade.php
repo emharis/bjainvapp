@@ -14,7 +14,7 @@
         <i class="fa fa-angle-double-right" ></i> 
         <a href="sales/order/edit/{{$so_master->id}}" >{{$so_master->so_no}}</a> 
         <i class="fa fa-angle-double-right" ></i> 
-        Customer Invoices
+        Invoices
     </h1>
 </section>
 
@@ -37,7 +37,7 @@
                         <th>INVOICE DATE</th>
                         <th>NUMBER</th>
                         <th>DUE DATE</th>
-                        <th>SOURCE DOCUMENT</th>
+                        <th>SO REF#</th>
                         <th>TOTAL</th>
                         <th>TO PAY</th>
                         <th>STATUS</th>
@@ -52,7 +52,7 @@
                                 {{$rownum++}}
                             </td>
                             <td>
-                                {{$dt->customer}}
+                                {{$dt->nama_customer}}
                             </td>
                             <td>
                                 {{$dt->invoice_date_formatted}}
@@ -72,11 +72,11 @@
                             <td class="text-right" >
                                 {{number_format($dt->amount_due,0,'.',',')}}
                             </td>
-                            <td>
+                            <td class="text-center" >
                                 @if($dt->status == 'O')
-                                    Open
+                                    <label class="label label-warning" >OPEN</label>
                                 @else
-                                    Paid
+                                    <label class="label label-success" >PAID</label>
                                 @endif
                             </td>
                             <td>
@@ -90,7 +90,7 @@
                 </tbody>
             </table>
 
-            <a class="btn btn-danger" href="sales/order/edit/{{$so_master->id}}" >Close</a>
+            <a class="btn btn-danger" href="sales/order/edit/{{$so_master->id}}" ><i class="fa fa-close" ></i> Close</a>
         </div><!-- /.box-body -->
     </div><!-- /.box -->
 

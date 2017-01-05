@@ -36,7 +36,7 @@
                     </tr>
                     <tr>
                         <td class="text-right"  style="padding-right: 5px;" >
-                            <label class="uang">0</label>
+                            <label class="uang">{{$total_amount_due}}</label>
                         </td>
                     </tr>
                     </tbody>
@@ -57,7 +57,7 @@
                         <th>REF#</th>
                         <th>INVOICE DATE</th>
                         <th>DUE DATE</th>
-                        <th>SOURCE DOCUMENT</th>
+                        <th>SO REF#</th>
                         <th>TOTAL</th>
                         <th>AMOUNT DUE</th>
                         <th>STATUS</th>
@@ -72,7 +72,7 @@
                                 {{$rownum++}}
                             </td>
                             <td>
-                                {{$dt->customer}}
+                                {{$dt->nama_customer}}
                             </td>
                             <td>
                                 {{$dt->no_inv}}
@@ -86,11 +86,11 @@
                             <td>
                                 {{$dt->so_no}}
                             </td>
-                            <td class="text-right" >
-                                {{number_format($dt->total,0,'.',',')}}
+                            <td class="text-right uang" >
+                                {{$dt->total}}
                             </td>
-                            <td class="text-right" >
-                                {{number_format($dt->amount_due,0,'.',',')}}
+                            <td class="text-right uang" >
+                                {{$dt->amount_due}}
                             </td>
                             <td>
                                 @if($dt->status == 'O')
@@ -143,6 +143,7 @@
 <script src="plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="plugins/datatables/dataTables.bootstrap.min.js"></script>
 <script src="plugins/jqueryform/jquery.form.min.js" type="text/javascript"></script>
+{!! Html::script('plugins/autonumeric/autoNumeric-min.js') !!}
 
 <script type="text/javascript">
 (function ($) {
@@ -154,6 +155,18 @@
         } else {
             requiredCheckboxes.attr('required', 'required');
         }
+    });
+
+    // -----------------------------------------------------
+    // SET AUTO NUMERIC
+    // =====================================================
+    $('.uang').autoNumeric('init',{
+        vMin:'0.00',
+        vMax:'9999999999.00'
+    });
+
+    $('.uang').each(function(){
+        $(this).autoNumeric('set',$(this).autoNumeric('get'));
     });
 
     var TBL_KATEGORI = $('#table-order').DataTable({

@@ -14,6 +14,10 @@ class PurchaseOrderController extends Controller {
         $data = \DB::table('view_purchase')
                 ->orderBy('tgl','desc')
                 ->get();
+ 
+        $total = \DB::table('purchase')
+                ->where('status','V')
+                ->sum('total');
 
         // create select data supplier
         // $supplier = \DB::table('supplier')->get();
@@ -24,6 +28,7 @@ class PurchaseOrderController extends Controller {
 
         return view('purchase.order.order', [
             'data' => $data,
+            'total' => $total,
             // 'select_supplier' => $select_supplier,
         ]);
     }

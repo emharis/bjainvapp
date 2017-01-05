@@ -19,11 +19,26 @@
 
     <!-- Default box -->
     <div class="box box-solid">
-        <div class="box-body">
+        <div class="box-header with-border" >
             <a class="btn btn-primary btn-sm" id="btn-add" href="purchase/supplier/add" ><i class="fa fa-plus" ></i> Add Supplier</a>
-            <div class="clearfix" ></div>
-            <br/>
-
+            
+            <div class="pull-right" >
+                <table style="background-color: #ECF0F5;" >
+                    <tr>
+                        <td class="bg-green text-center" rowspan="2" style="width: 50px;" ><i class="fa fa-tags" ></i></td>
+                        <td style="padding-left: 10px;padding-right: 5px;">
+                            JUMLAH DATA
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-right"  style="padding-right: 5px;" >
+                            <label class="">{{count($data)}}</label>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="box-body">
             <?php $rownum=1; ?>
             <table class="table table-bordered table-condensed table-striped table-hover" id="table-supplier" >
                 <thead>

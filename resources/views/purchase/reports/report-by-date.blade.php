@@ -6,18 +6,27 @@
 <link href="plugins/datepicker/datepicker3.css" rel="stylesheet" type="text/css"/>
 
 <style>
-  .table tfoot {
+  /*.table tfoot {
     background-color: #DDDDDD;
   }
-
+*/
   .table tfoot > tr > th {
-    border-color: #DDDDDD;
-    border-color: #AFAFB6;
+    border-color: #CACACA!important;
+    border-top-width: 2px!important;
   }
 
   #table-detil-total tbody > tr > td {
     margin:0;
     padding:0;
+  }
+
+  .dl-horizontal dt{
+    text-align: left;
+    width: auto;
+    margin-right: 5px;
+  }
+  .dl-horizontal dd{
+    margin-left: 0px;
   }
 </style>
 
@@ -37,37 +46,27 @@
     <!-- Default box -->
     <div class="box box-solid">
       <div class="box-header with-border">
-        <label>
-          <h3 style="margin:0;padding:0;font-weight:bold;" >Purchase Orders Report</h3>
-        </label>
+        <h3 class="box-title" >Purchase Report</h3>
         
-        <div class="box-tools pull-right">
+        {{-- <div class="box-tools pull-right">
           <div class="btn-group pull-right">
             <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Print <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
-              {{-- <li><a href="#">Direct Print</a></li> --}}
               <li><a target="_blank" href="report/purchase/filter-by-date/pdf/{{$start_date}}/{{$end_date}}">Pdf</a></li>
               <li><a href="#">Xls</a></li>
             </ul>
           </div>
-        </div>
+        </div> --}}
+
       </div><!-- /.box-header -->
       <div class="box-body">
-        <table class="table table-condensed" >
-          <tbody>
-            <tr>
-              <td class="col-sm-2 col-md-2 col-lg-2" >
-                <label>Order date</label>
-              </td>
-              <td>:</td>
-              <td>
-                {{'['. $start_date .'] - [' .$end_date. ']' }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        
+        <dl class="dl-horizontal">
+          <dt>Order Date : </dt>
+          <dd>{{str_replace('-','/',$start_date) .' - ' . str_replace('-','/',$end_date) }}</dd>
+        </dl>
 
         <h4 class="page-header" style="font-size:14px;color:#3C8DBC"><strong>ORDER DETAILS</strong></h4>
 
@@ -83,7 +82,7 @@
               <th>TOTAL</th>
               <th>DISC</th>
               <th>PAYMENT AMOUNT</th>
-              <th>AMOUNT DUE</th>
+              {{-- <th>AMOUNT DUE</th> --}}
             </tr>
           </thead>
           <tbody>
@@ -108,19 +107,17 @@
                   {{$dt->jatuh_tempo_formatted}}
                 </td>
                 <td class="uang text-right" >
-                  {{$dt->total}}
+                  {{$dt->subtotal}}
                 </td>
                 <td class="uang text-right" >
                   {{$dt->disc}}
                 </td>
                 <td class="uang text-right" >
-                  {{$dt->grand_total}}
+                  {{$dt->total}}
                 </td>
-                <td class="uang text-right" >
-                  {{$dt->amount_due}}
-                </td>
+                
               </tr>
-              <?php $payment_total += $dt->grand_total; ?>
+              <?php $payment_total += $dt->total; ?>
             @endforeach
 
           </tbody>
@@ -138,13 +135,10 @@
               <th  class="uang text-right" >
                 {{$total_payment_amount}}
               </th>
-              <th  class="uang text-right" >
-                {{$total_amount_due}}
-              </th>
             </tr>
           </tfoot>
         </table>
-
+{{-- 
         <br/>
 
         <div class="row">
@@ -199,11 +193,17 @@
                         </tbody>
                     </table>
                 </div>
-            </div>
+            </div> --}}
 
       </div><!-- /.box-body -->
       <div class="box-footer" >
-        <a class="btn btn-danger" href="purchase/report" >Close</a>
+        <form action="purchase/report/pdf-by-date" method="POST" target="_blank" >
+          <input type="hidden" name="start_date" value="{{$start_date}}" > 
+          <input type="hidden" name="end_date" value="{{$end_date}}" > 
+
+          <button type="submit" class="btn btn-success"  id="btn-print-pdf" ><i class="fa fa-file-pdf-o" ></i> PDF</button>
+          <a class="btn btn-danger" href="purchase/report" ><i class="fa fa-close" ></i> Close</a>
+        </form>
       </div>
     </div><!-- /.box -->
 
@@ -230,6 +230,10 @@
     $(this).autoNumeric('set',$(this).autoNumeric('get'));
   });
   // END OF SET AUTO NUMERIC
+
+  $('#btn-print-pdf').click(function(){
+
+  });
 
 })(jQuery);
 </script>
